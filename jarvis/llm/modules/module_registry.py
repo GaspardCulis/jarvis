@@ -1,5 +1,3 @@
-from module import LLMModule
-
 class ModuleRegistry():
     _instance = None
 

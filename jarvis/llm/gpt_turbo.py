@@ -5,6 +5,7 @@ load_dotenv()
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
+
 class LLM():
     def __init__(self, context_prompt: str) -> None:
         self.context_prompt = context_prompt
@@ -20,8 +21,8 @@ class LLM():
             "content": message
         })
         response = openai.ChatCompletion.create(
-            model = "gpt-3.5-turbo",
-            messages = self.message_history
+            model="gpt-3.5-turbo",
+            messages=self.message_history
         )
 
         self.message_history.append({
