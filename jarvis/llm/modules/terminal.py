@@ -16,9 +16,10 @@ class TerminalModule(LLMModule):
         self.terminal = subprocess.Popen(
             ['/bin/bash'], shell=False, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         os.set_blocking(self.terminal.stdout.fileno(), False)
+        os.set_blocking(self.terminal.stderr.fileno(), False)
 
     def activate(self, message: str) -> str:
-        command = message.split("[terminal]")[1]
+        command = message.split(f"[{self.prefix}]")[1]
         child_count = len(psutil.Process(pid=self.terminal.pid).children())
         self.terminal.stdin.write(f"{command}\n".encode())
         self.terminal.stdin.flush()
@@ -34,4 +35,4 @@ class TerminalModule(LLMModule):
         for line in self.terminal.stderr:
             err += line.decode()
 
-        return f"{out}{err}".strip()
+        return f"[{self.prefix}]{out}{err}".strip()

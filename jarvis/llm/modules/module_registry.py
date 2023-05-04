@@ -17,4 +17,8 @@ class ModuleRegistry():
     def register(self, module: 'LLMModule') -> None:
         self.modules.append(module)
 
-    
+    def evaluate(self, message: str) -> str | None:
+        for module in self.modules:
+            if module.should_activate(message):
+                return module.activate(message)
+        return None
