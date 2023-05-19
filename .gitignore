@@ -4,3 +4,4 @@ config.json
 .env
 __pycache__
 pyvenv.cfg
+data
