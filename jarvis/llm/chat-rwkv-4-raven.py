@@ -5,12 +5,16 @@
 import torch
 import sys
 import os
+os.environ['RWKV_JIT_ON'] = '1'  # noqa
 from rwkv.utils import PIPELINE, PIPELINE_ARGS
 from rwkv.model import RWKV  # pip install rwkv
 import numpy as np
 print('\nChatRWKV https://github.com/BlinkDL/ChatRWKV\n')
 
 np.set_printoptions(precision=4, suppress=True, linewidth=200)
+
+from dotenv import load_dotenv  # noqa
+load_dotenv()  # noqa
 
 model_path = os.getenv("RWKV_MODEL_PATH")
 
@@ -38,9 +42,8 @@ model_path = os.getenv("RWKV_MODEL_PATH")
 #
 ########################################################################################################
 # set these before import RWKV
-os.environ['RWKV_JIT_ON'] = '1'
 # '1' to compile CUDA kernel (10x faster), requires c++ compiler & cuda libraries
-os.environ["RWKV_CUDA_ON"] = '1'
+os.environ["RWKV_CUDA_ON"] = '0'
 
 model = RWKV(
     model=model_path, strategy='cuda fp16')
@@ -58,9 +61,9 @@ print(out.detach().cpu().numpy())                   # same result as above
 
 # print('\n')
 # exit(0)
-pipeline = PIPELINE(model, "20B_tokenizer.json")
+pipeline = PIPELINE(model, "data/20B_tokenizer.json")
 
-ctx = "\nIn a shocking finding, scientist discovered a herd of dragons living in a remote, previously unexplored valley, in Tibet. Even more surprising to the researchers was the fact that the dragons spoke perfect Chinese."
+ctx = "Question: What is top_p in machine learning ?\n"
 print(ctx, end='')
 
 
@@ -71,7 +74,7 @@ def my_print(s):
 # https://platform.openai.com/docs/api-reference/parameter-details
 
 
-args = PIPELINE_ARGS(temperature=1.0, top_p=0.7, top_k=0,  # top_k = 0 then ignore
+args = PIPELINE_ARGS(temperature=0.7, top_p=0.7, top_k=0,  # top_k = 0 then ignore
                      alpha_frequency=0.25,
                      alpha_presence=0.25,
                      token_ban=[0],  # ban the generation of some tokens
@@ -81,6 +84,6 @@ args = PIPELINE_ARGS(temperature=1.0, top_p=0.7, top_k=0,  # top_k = 0 then igno
 ########################################################################################################
 # 1. set os.environ["RWKV_CUDA_ON"] = '1' if possible, for faster preprocess of a long ctx.
 # 2. Reuse the state (use deepcopy to clone it) when you are running the same ctx multiple times.
-pipeline.generate(ctx, token_count=2048, args=args, callback=my_print)
+pipeline.generate(ctx, token_count=8192, args=args, callback=my_print)
 
 print('\n')

@@ -3,3 +3,4 @@ psutil==5.9.5
 python-dotenv==1.0.0
 rwkv==0.7.3
 pynvml==11.5.0
+prompt_toolkit==3.0.38
