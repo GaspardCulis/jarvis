@@ -1,6 +1,10 @@
-from jarvis.llm.gpt_turbo import LLM
-from jarvis.llm.modules.terminal import TerminalModule
+from dotenv import load_dotenv  # noqa
+load_dotenv()  # noqa
+
 from jarvis.llm.modules.module_registry import ModuleRegistry
+from jarvis.llm.modules.terminal import TerminalModule
+from jarvis.llm.gpt_turbo import LLM
+
 
 term = TerminalModule()
 

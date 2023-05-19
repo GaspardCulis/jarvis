@@ -12,6 +12,8 @@ print('\nChatRWKV https://github.com/BlinkDL/ChatRWKV\n')
 
 np.set_printoptions(precision=4, suppress=True, linewidth=200)
 
+model_path = os.getenv("RWKV_MODEL_PATH")
+
 # current_path = os.path.dirname(os.path.abspath(__file__))
 # sys.path.append(f'{current_path}/rwkv_pip_package/src')
 
@@ -41,7 +43,7 @@ os.environ['RWKV_JIT_ON'] = '1'
 os.environ["RWKV_CUDA_ON"] = '1'
 
 model = RWKV(
-    model='MODEL_PATH', strategy='cuda fp16')
+    model=model_path, strategy='cuda fp16')
 
 # out, state = model.forward([187], None)
 # print(out.detach().cpu().numpy())
