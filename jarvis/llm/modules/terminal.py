@@ -29,7 +29,10 @@ class TerminalModule(LLMModule):
 
         out = ''
         for line in self.terminal.stdout:
-            out += line.decode()
+            try:
+                out += line.decode()
+            except UnicodeDecodeError as e:
+                pass
 
         err = ''
         for line in self.terminal.stderr:
