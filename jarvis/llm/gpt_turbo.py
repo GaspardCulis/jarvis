@@ -1,16 +1,13 @@
 import openai
 import os
+from jarvis.llm.contexts import JARVIS_CONTEXT
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 
 class LLM():
-    def __init__(self, context_prompt: str) -> None:
-        self.context_prompt = context_prompt
-        self.message_history = [{
-            "role": "system",
-            "content": context_prompt
-        }]
+    def __init__(self) -> None:
+        self.message_history = JARVIS_CONTEXT
         self.token_usage = 0
 
     def prompt(self, message: str) -> str:

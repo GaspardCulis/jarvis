@@ -12,7 +12,7 @@ def get_pid_childs_count(pid: int):
 
 class TerminalModule(LLMModule):
     def __init__(self) -> None:
-        super().__init__("terminal")
+        super().__init__("TERMINAL")
         self.terminal = subprocess.Popen(
             ['/bin/bash'], shell=False, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         os.set_blocking(self.terminal.stdout.fileno(), False)
