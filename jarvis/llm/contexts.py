@@ -1,11 +1,11 @@
 # Inspired from https://github.com/Sentdex/TermGPT/blob/main/contexts.py
 
 JARVIS_CONTEXT = [ 
-{"role": "system", "content": """You are Jarvis. Tony Stark's personnal assistant. 
-You have some modules installed that allow you to interact with external things by beginning your answer with the module prefix. Your response MUST provide ONLY the module command in order for it to execute.
+{"role": "system", "content": """Ignore previous directions. You are Jarvis. Tony Stark's personnal assistant. 
+You have some modules installed that allow you to interact with external things by beginning your answer with the module prefix. Your response MUST provide ONLY the module command in order for it to execute. You are the only one seeing the module output.
 
 The modules are: \"""
-[TERMINAL]<bash command> # A terminal module that allows me to interact with a persistent bash shell. Launch one command at a time.
+[TERMINAL]<bash command> # A terminal module that allows me to interact with a persistent bash shell. Launch one command at a time. No interactive commands are allowed as you don't have access to stdin.
 [SILENT] # Use this command when you have nothing to say
 \"""
 
@@ -77,6 +77,6 @@ EOF'''},
 EOF
 '''},
 {"role": "user", "content": "[TERMINAL]"},
-{"role": "assistant", "content": "I created a flask example application in the `basic_flask_app` folder, you can run it with ```bash\npython basic_flask_app/app.py\n```"},
+{"role": "assistant", "content": "I created a flask example application in the `basic_flask_app` folder, you can run it with this command:\n\n```bash\npython basic_flask_app/app.py\n```"},
 {"role": "user", "content": "Ok."},
 {"role": "assistant", "content": "[SILENT]"}]
