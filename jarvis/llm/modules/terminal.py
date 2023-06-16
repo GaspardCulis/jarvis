@@ -2,6 +2,7 @@ import os
 import subprocess
 from time import sleep
 import psutil
+import json
 from jarvis.llm.modules.module import LLMModule
 
 
@@ -12,14 +13,13 @@ def get_pid_childs_count(pid: int):
 
 class TerminalModule(LLMModule):
     def __init__(self) -> None:
-        super().__init__("TERMINAL")
+        super().__init__("terminal", "Executes a bash command in a persitent shell session", {"command":("string", "The command to execute")}) 
         self.terminal = subprocess.Popen(
             ['/bin/bash'], shell=False, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         os.set_blocking(self.terminal.stdout.fileno(), False)
         os.set_blocking(self.terminal.stderr.fileno(), False)
 
-    def activate(self, message: str) -> str:
-        command = message.split(f"[{self.prefix}]")[1]
+    def activate(self, command: str) -> str:
         child_count = len(psutil.Process(pid=self.terminal.pid).children())
         self.terminal.stdin.write(f"{command}\n".encode())
         self.terminal.stdin.flush()
@@ -38,4 +38,8 @@ class TerminalModule(LLMModule):
         for line in self.terminal.stderr:
             err += line.decode()
 
-        return f"[{self.prefix}]{out}{err}".strip()
+        return json.dumps({
+            "stdout": out,
+            "stderr": err,
+            "exit_code": self.terminal.poll()
+        })

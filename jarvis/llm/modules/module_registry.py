@@ -1,3 +1,5 @@
+import json
+
 class ModuleRegistry():
     _instance = None
 
@@ -6,7 +8,7 @@ class ModuleRegistry():
             raise Exception("ModuleRegistry is a singleton!")
         else:
             ModuleRegistry._instance = self
-        self.modules = []
+        self.modules = {}
 
     @staticmethod
     def get_instance() -> 'ModuleRegistry':
@@ -15,10 +17,13 @@ class ModuleRegistry():
         return ModuleRegistry._instance
 
     def register(self, module: 'LLMModule') -> None:
-        self.modules.append(module)
+        self.modules[module.name] = module
 
-    def evaluate(self, message: str) -> str | None:
-        for module in self.modules:
-            if module.should_activate(message):
-                return module.activate(message)
-        return None
+    def gpt_function_call(self, function_call) -> str:
+        arguments = []
+        gpt_arguments = json.loads(function_call["arguments"])
+        for value in gpt_arguments.values():
+            arguments.append(value)
+
+        print(f"[ModuleRegistry] Calling \"{function_call['name']}\" module with arguments {arguments}")
+        return self.modules[function_call["name"]].activate(*arguments)

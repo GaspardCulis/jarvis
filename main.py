@@ -10,14 +10,19 @@ term = TerminalModule()
 
 llm = LLM()
 
-response = ""
+response = {}
 while True:
-    message = ModuleRegistry.get_instance().evaluate(response)
-    if message:
-        print(f"MODULE: {message}")
+    if response.get("function_call"):
+        output = ModuleRegistry.get_instance().gpt_function_call(response["function_call"])
+        print("Module output: ", output)
+        response = llm.prompt({
+            "role": "function",
+            "name": response["function_call"]["name"],
+            "content": output
+        })
+        print(response["content"])
     else:
         message = input("User: ")
-
-    response = llm.prompt(message)
-
-    print(f"Jarvis: {response}")
+        response = llm.prompt(message)
+        if response.get("content"):
+            print(response["content"])

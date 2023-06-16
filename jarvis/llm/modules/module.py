@@ -1,14 +1,14 @@
 from abc import ABC, abstractmethod
+from typing import Tuple, Dict
 from jarvis.llm.modules.module_registry import ModuleRegistry
 
 
 class LLMModule(ABC):
-    def __init__(self, prefix: str) -> None:
-        self.prefix = prefix
+    def __init__(self, name: str, description: str, parameters: Dict[str, Tuple[str, str]]) -> None:
+        self.name = name
+        self.description = description
+        self.parameters = parameters
         ModuleRegistry.get_instance().register(self)
-
-    def should_activate(self, message: str) -> bool:
-        return message.startswith(f"[{self.prefix}]")
 
     @abstractmethod
     def activate(self, message: str) -> str:
