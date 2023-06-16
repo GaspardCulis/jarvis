@@ -4,11 +4,12 @@ load_dotenv()  # noqa
 from jarvis.llm.modules.module_registry import ModuleRegistry
 from jarvis.llm.modules.terminal import TerminalModule
 from jarvis.llm.gpt_turbo import LLM
-
+from jarvis.tts.elevenlabs import ElevenLabs
 
 term = TerminalModule()
 
 llm = LLM()
+tts = ElevenLabs()
 
 response = {}
 while True:
@@ -26,3 +27,5 @@ while True:
         response = llm.prompt(message)
         if response.get("content"):
             print(response["content"])
+            tts.speak(response["content"])
+            
