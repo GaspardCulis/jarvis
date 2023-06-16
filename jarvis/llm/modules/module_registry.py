@@ -6,8 +6,7 @@ class ModuleRegistry():
     def __init__(self):
         if ModuleRegistry._instance is not None:
             raise Exception("ModuleRegistry is a singleton!")
-        else:
-            ModuleRegistry._instance = self
+        ModuleRegistry._instance = self
         self.modules = {}
 
     @staticmethod
@@ -26,4 +25,11 @@ class ModuleRegistry():
             arguments.append(value)
 
         print(f"[ModuleRegistry] Calling \"{function_call['name']}\" module with arguments {arguments}")
-        return self.modules[function_call["name"]].activate(*arguments)
+        try:
+            result = self.modules[function_call["name"]].activate(*arguments)
+            if len(result) > 500:
+                result = result[:500] + "[...] Trimmed output."
+            return result
+        except:
+            print("[WARNING] Failed to call module")
+            return "Error while calling "+function_call["name"]+" function."
