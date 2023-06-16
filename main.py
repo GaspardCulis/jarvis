@@ -6,7 +6,7 @@ from jarvis.llm.modules.terminal import TerminalModule
 from jarvis.llm.gpt_turbo import LLM
 from jarvis.tts.elevenlabs import ElevenLabs
 
-term = TerminalModule()
+# term = TerminalModule()
 
 llm = LLM()
 tts = ElevenLabs()

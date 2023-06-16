@@ -1,19 +1,35 @@
-from elevenlabs import generate, stream, set_api_key, play
+import elevenlabs
+from elevenlabs import generate, stream, set_api_key, play, api
+from elevenlabs.api.error import RateLimitError, APIError
+from elevenlabs_unleashed.manager import ELUAccountManager 
 from jarvis.tts.tts_provider import TTSProvider
-import os
 
 class ElevenLabs(TTSProvider):
     def __init__(self, voice = "Josh", model = "eleven_multilingual_v1"):
-        set_api_key(os.getenv("ELEVENLABS_API_KEY"))
         self.voice = voice
         self.model = model
+        self.eluac = ELUAccountManager(set_api_key)
+        print("[ElevenLabs] Initializing the ElevenLabs TTS provider...")
+        self.eluac.next()
+        print("[ElevenLabs] Initialization done.")
+
     
     def speak(self, message: str):
-        audio_stream = generate(
-            text=message,
-            voice=self.voice,
-            model=self.model,
-            stream=True
-        )
+        try:
+            audio_stream = generate(
+                text=message,
+                voice=self.voice,
+                model=self.model,
+                stream=True
+            )
+        except (RateLimitError) as e:
+            print("[ElevenLabs] Maximum number of requests reached. Getting a new API key...")
+            self.eluac.next()
+            self.speak(message)
+            return
 
-        stream(audio_stream)
+        print("[ElevenLabs] Starting the stream...")
+        try:
+            stream(audio_stream) # type: ignore
+        except (APIError) as e:
+            print("[ElevenLabs] Text is too long.")

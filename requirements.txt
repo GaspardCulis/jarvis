@@ -5,3 +5,4 @@ rwkv==0.7.5
 pynvml==11.5.0
 prompt_toolkit==3.0.38
 elevenlabs==0.2.18
+elevenlabs_unleashed>=0.1.3
