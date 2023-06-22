@@ -1,5 +1,5 @@
 import os
-from elevenlabs import generate, stream, set_api_key
+from elevenlabs import generate, stream, set_api_key, get_api_key
 from elevenlabs.api import User
 from elevenlabs.api.error import APIError
 from jarvis.tts.tts_provider import TTSProvider
@@ -61,6 +61,8 @@ class ElevenLabs(TTSProvider):
         self.accounts.sort(key=lambda x: x["character_count"], reverse=True)
         for account in self.accounts:
             if account["character_limit"] - account["character_count"] > text_length:
+                if get_api_key() != account["api_key"]:
+                    print("[ElevenLabs] Switching to account: " + account["username"] + " (" + str(account["character_count"]) + "/" + str(account["character_limit"]) + ")")
                 set_api_key(account["api_key"])
                 return
         raise Exception("No account available to handle the text length")
