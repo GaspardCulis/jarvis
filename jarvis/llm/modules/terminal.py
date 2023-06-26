@@ -13,7 +13,7 @@ def get_pid_childs_count(pid: int):
 
 class TerminalModule(LLMModule):
     def __init__(self) -> None:
-        super().__init__("terminal", "Executes a bash command in a persitent shell session. Try to minimize command's output length.", {"command":("string", "The command to execute")}) 
+        super().__init__("terminal", "Executes a bash command in a persitent shell session.", {"command":("string", "The command to execute")}) 
         self.terminal = subprocess.Popen(
             ['/bin/bash'], shell=False, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         os.set_blocking(self.terminal.stdout.fileno(), False)
@@ -38,8 +38,9 @@ class TerminalModule(LLMModule):
         for line in self.terminal.stderr:
             err += line.decode()
 
+        exit_code = self.terminal.poll() or 0
         return json.dumps({
-            "stdout": out,
+            "stdout": out if out else ("success" if not (err or exit_code) else ""), # Hack, if all stdou, stderr and exit_code are empty, GPT will think that the command failed and will retry
             "stderr": err,
-            "exit_code": self.terminal.poll()
+            "exit_code": exit_code
         })
