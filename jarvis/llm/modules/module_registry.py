@@ -18,6 +18,12 @@ class ModuleRegistry():
     def register(self, module: 'LLMModule') -> None:
         self.modules[module.name] = module
 
+    def get_preprompts(self) -> list[dict]:
+        out = []
+        for module in self.modules.values():
+            out = out + module.get_preprompts()
+        return out
+
     def gpt_function_call(self, function_call) -> str:
         arguments = []
         try:

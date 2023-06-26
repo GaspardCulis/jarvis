@@ -19,6 +19,32 @@ class TerminalModule(LLMModule):
         os.set_blocking(self.terminal.stdout.fileno(), False)
         os.set_blocking(self.terminal.stderr.fileno(), False)
 
+    def get_preprompts(self) -> list[dict]:
+        return [
+            {
+                "role": "user", 
+                "content": 
+                "What OS am I running ?"
+            },
+            {
+                "role": 
+                "assistant", 
+                "content": None,
+                "function_call": {
+                    "name": "terminal",
+                    "arguments": "{\n  \"command\": \"cat /etc/os-release\"\n}"
+                }
+            },
+            {
+                'role': 'function', 
+                'name': 'terminal', 
+                'content': self.activate("cat /etc/os-release")},
+            {
+                "role": "assistant",
+                "content": "Your operating system is " + json.loads(self.activate("""lsb_release -ds | sed 's/"//g'"""))["stdout"]
+            }
+        ]
+
     def activate(self, command: str) -> str:
         child_count = len(psutil.Process(pid=self.terminal.pid).children())
         self.terminal.stdin.write(f"{command}\n".encode())

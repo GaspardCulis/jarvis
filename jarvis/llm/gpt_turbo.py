@@ -52,11 +52,7 @@ class LLM():
             function_call="auto",
         )
 
-        if not response.choices[0]["message"].get("function_call"):
-            self.message_history.append({
-                "role": response.choices[0]['message']['role'],
-                "content": response.choices[0]['message']['content']
-            })
+        self.message_history.append(response.choices[0]['message'])
 
         self.token_usage += response['usage']['total_tokens']
 

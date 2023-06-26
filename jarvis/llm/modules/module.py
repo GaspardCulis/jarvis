@@ -13,3 +13,10 @@ class LLMModule(ABC):
     @abstractmethod
     def activate(self, message: str) -> str:
         pass
+
+    @abstractmethod
+    def get_preprompts(self) -> list[dict]:
+        """
+        Returns an array of example prompts for the model
+        """
+        return []

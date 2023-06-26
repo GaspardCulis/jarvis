@@ -11,6 +11,8 @@ term = TerminalModule()
 llm = LLM()
 tts = ElevenLabs()
 
+llm.message_history += ModuleRegistry.get_instance().get_preprompts()
+
 response = {}
 while True:
     if response.get("function_call"):
