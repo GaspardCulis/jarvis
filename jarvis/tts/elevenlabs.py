@@ -1,4 +1,5 @@
 import os
+import threading
 from elevenlabs import generate, stream, set_api_key, get_api_key
 from elevenlabs.api import User
 from elevenlabs.api.error import APIError
@@ -8,10 +9,13 @@ import json
 MAX_REQUEST_CHARACTERS = 2700
 
 class ElevenLabs(TTSProvider):
+
     def __init__(self, voice = "Josh", model = "eleven_multilingual_v1"):
         self.voice = voice
         self.model = model
-        self.accounts = json.load(open(os.getenv("ELEVENLABS_ACCOUNTS_PATH"), "r")) # type: ignore
+        self.accounts: list = json.load(open(os.getenv("ELEVENLABS_ACCOUNTS_PATH"), "r")) # type: ignore
+        self.__update_accounts_thread = threading.Thread(target=ElevenLabs.__update_accounts, args=[self]) # type: ignore
+        self.__update_accounts_thread.start()
     
     def speak(self, message: str):
         print("[ElevenLabs] Selecting account...")
@@ -19,7 +23,7 @@ class ElevenLabs(TTSProvider):
         try:
             self.__select_account(len(message))
         except Exception as e:
-            print("[ElevenLabs] No account available to handle the text length")
+            print("[ElevenLabs] Exception: ", e)
             return
 
         audio_stream = generate(
@@ -51,19 +55,26 @@ class ElevenLabs(TTSProvider):
                 self.speak(message[i:])
 
     def __select_account(self, text_length: int):
+        self.__update_accounts_thread.join()
+        self.accounts.sort(key=lambda x: x["character_count"], reverse=True)
+        for account in self.accounts:
+            if account["character_limit"] - account["character_count"] >= text_length:
+                if get_api_key() != account["api_key"]:
+                    print("[ElevenLabs] Switching to account: " + account["username"] + " (" + str(account["character_count"]) + "/" + str(account["character_limit"]) + ")")
+                set_api_key(account["api_key"])
+                # Restart accounts thread
+                self.__update_accounts_thread = threading.Thread(target=ElevenLabs.__update_accounts, args=[self])
+                self.__update_accounts_thread.start()
+                return
+        raise Exception("No account available to handle the text length")
+    
+    def __update_accounts(self):
+        print("[ElevenLabs] Updating accounts...")
         # Select the account with the highest usage which can handle the text length
         for i in range(len(self.accounts)):
             set_api_key(self.accounts[i]["api_key"])
             user = User.from_api()
             self.accounts[i]["character_count"] = user.subscription.character_count
             self.accounts[i]["character_limit"] = user.subscription.character_limit
-        
-        self.accounts.sort(key=lambda x: x["character_count"], reverse=True)
-        for account in self.accounts:
-            if account["character_limit"] - account["character_count"] > text_length:
-                if get_api_key() != account["api_key"]:
-                    print("[ElevenLabs] Switching to account: " + account["username"] + " (" + str(account["character_count"]) + "/" + str(account["character_limit"]) + ")")
-                set_api_key(account["api_key"])
-                return
-        raise Exception("No account available to handle the text length")
+        print("[ElevenLabs] Accounts updated")
     
