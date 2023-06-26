@@ -6,7 +6,7 @@ from jarvis.llm.modules.terminal import TerminalModule
 from jarvis.llm.gpt_turbo import LLM
 from jarvis.tts.elevenlabs import ElevenLabs
 
-# term = TerminalModule()
+term = TerminalModule()
 
 llm = LLM()
 tts = ElevenLabs()
@@ -21,11 +21,10 @@ while True:
             "name": response["function_call"]["name"],
             "content": output
         })
-        print(response["content"])
     else:
-        message = input("User: ")
-        response = llm.prompt(message)
         if response.get("content"):
             print(response["content"])
             tts.speak(response["content"])
+        message = input("User: ")
+        response = llm.prompt(message)
             
