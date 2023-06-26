@@ -20,7 +20,12 @@ class ModuleRegistry():
 
     def gpt_function_call(self, function_call) -> str:
         arguments = []
-        gpt_arguments = json.loads(function_call["arguments"])
+        try:
+            gpt_arguments = json.loads(function_call["arguments"])
+        except json.decoder.JSONDecodeError:
+            print("[WARNING] Invalid function call JSON arguments: ", function_call["arguments"])
+            return "Invalid function call JSON arguments"
+        
         for value in gpt_arguments.values():
             arguments.append(value)
 
@@ -30,6 +35,6 @@ class ModuleRegistry():
             if len(result) > 500:
                 result = result[:500] + "[...] Trimmed output."
             return result
-        except:
-            print("[WARNING] Failed to call module")
+        except Exception as e:
+            print("[WARNING] Failed to call module: ", e)
             return "Error while calling "+function_call["name"]+" function."
