@@ -1,5 +1,6 @@
 bin
 lib
+share
 config.json
 .env
 __pycache__
