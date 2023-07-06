@@ -6,10 +6,29 @@ from jarvis.llm.modules.terminal import TerminalModule
 from jarvis.llm.gpt_turbo import LLM
 from jarvis.tts.elevenlabs import ElevenLabs
 
+import pvporcupine
+from pvrecorder import PvRecorder
+import wave
+import numpy as np
+import struct
+import whisper
+import os
+
 term = TerminalModule()
 
 llm = LLM()
 tts = ElevenLabs()
+stt = whisper.load_model("medium")
+porcupine = pvporcupine.create(
+    access_key = os.getenv("PORCUPINE_API_KEY"),
+    keyword_paths = [os.getenv("PORCUPINE_MODEL_PATH")]
+)
+
+recorder = PvRecorder(
+    device_index=-1,
+    frame_length=porcupine.frame_length)
+
+prompt_audio_path = "/tmp/jarvis_prompt.wav"
 
 llm.message_history += ModuleRegistry.get_instance().get_preprompts()
 
@@ -23,10 +42,43 @@ while True:
             "name": response["function_call"]["name"],
             "content": output
         })
-    else:
-        if response.get("content"):
-            print(response["content"])
-            tts.speak(response["content"])
-        message = input("User: ")
-        response = llm.prompt(message)
+        continue
+    
+    if response.get("content"):
+        print(response["content"])
+        tts.speak(response["content"])
+
+    # Hotword detection
+    recorder.start()
+    while True:
+        pcm = recorder.read()
+        result = porcupine.process(pcm)
+        if result >= 0:
+            print("Hotword detected")
+            break
+    # Listen audio prompt
+    audio = []
+    silent_frames_count = 0
+    while True:
+        frame = recorder.read()
+        audio.extend(frame)
+        max_frame_vol = np.max(np.abs(frame))
+        print(max_frame_vol)
+        if max_frame_vol < 100:
+            silent_frames_count += 1
+            if silent_frames_count > 30:
+                break
+        else:
+            silent_frames_count = 0
+    # Save audio 
+    recorder.stop()
+    with wave.open(prompt_audio_path, "w") as f:
+        f.setparams((1, 2, 16000, 512, "NONE", "NONE"))
+        f.writeframes(struct.pack("h" * len(audio), *audio))
+    # Decode using whisper
+    result = stt.transcribe(prompt_audio_path)
+
+    message = result["text"]
+    print("Transcribed audio = ", message)
+    response = llm.prompt(message)
             
