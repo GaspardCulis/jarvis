@@ -36,6 +36,9 @@ class ElevenLabs(TTSProvider):
         print("[ElevenLabs] Starting the stream...")
         try:
             stream(audio_stream) # type: ignore
+            # Restart accounts thread
+            self.__update_accounts_thread = threading.Thread(target=ElevenLabs.__update_accounts, args=[self])
+            self.__update_accounts_thread.start()
         except (APIError) as e:
             print(e)
             if e.message and e.message.startswith("Unusual activity detected."):
@@ -62,9 +65,6 @@ class ElevenLabs(TTSProvider):
                 if get_api_key() != account["api_key"]:
                     print("[ElevenLabs] Switching to account: " + account["username"] + " (" + str(account["character_count"]) + "/" + str(account["character_limit"]) + ")")
                 set_api_key(account["api_key"])
-                # Restart accounts thread
-                self.__update_accounts_thread = threading.Thread(target=ElevenLabs.__update_accounts, args=[self])
-                self.__update_accounts_thread.start()
                 return
         raise Exception("No account available to handle the text length")
     

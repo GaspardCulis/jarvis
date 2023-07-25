@@ -13,6 +13,7 @@ import numpy as np
 import struct
 import whisper
 import os
+from random import choice
 
 term = TerminalModule()
 
@@ -23,6 +24,7 @@ porcupine = pvporcupine.create(
     access_key = os.getenv("PORCUPINE_API_KEY"),
     keyword_paths = [os.getenv("PORCUPINE_MODEL_PATH")]
 )
+hotword_responses = ["Oui ?", "Qu'y a-t-il ?", "Que puis-je faire pour vous ?", "Comment puis-je vous aider ?"]
 
 recorder = PvRecorder(
     device_index=-1,
@@ -56,6 +58,10 @@ while True:
         if result >= 0:
             print("Hotword detected")
             break
+    recorder.stop()
+    while True:
+        tts.speak(choice(hotword_responses))
+    recorder.start()
     # Listen audio prompt
     audio = []
     silent_frames_count = 0
@@ -64,7 +70,7 @@ while True:
         audio.extend(frame)
         max_frame_vol = np.max(np.abs(frame))
         print(max_frame_vol)
-        if max_frame_vol < 100:
+        if max_frame_vol < 300:
             silent_frames_count += 1
             if silent_frames_count > 30:
                 break
