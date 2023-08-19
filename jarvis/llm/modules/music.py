@@ -2,6 +2,7 @@ from jarvis.llm.modules.module import LLMModule
 from ytmusicapi import YTMusic
 import os
 import json
+import subprocess
 
 class MusicSearch(LLMModule):
     MAX_SEARCH_RESULTS = 3
@@ -87,6 +88,14 @@ class MusicPlay(LLMModule):
         })
 
     def activate(self, arguments: dict) -> str:
+        videoId = arguments.get("video-id")
+        if not videoId:
+            return "Error: No 'video-id' argument provided"
+        try:
+            # TODO Less system specific
+            subprocess.run(f"xfce4-terminal -T jarvis-playback --command=\"mpv --no-video https://youtu.be/{videoId}\"", shell=True)
+        except KeyboardInterrupt:
+            pass
         return ""
 
     def get_preprompts(self) -> list[dict]:
