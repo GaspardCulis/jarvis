@@ -23,7 +23,7 @@ stt = whisper.load_model("medium")
 porcupine = pvporcupine.create(
     access_key = os.getenv("PORCUPINE_API_KEY"),
     model_path = os.getenv("PORCUPINE_MODEL_PATH"),
-    keyword_paths = [os.getenv("PORCUPINE_PPN_PATH")]
+    keyword_paths = [os.getenv("PORCUPINE_PPN_PATH") or ""]
 )
 hotword_responses = ["Oui ?", "Qu'y a-t-il ?", "Que puis-je faire pour vous ?", "Comment puis-je vous aider ?"]
 
@@ -50,41 +50,50 @@ while True:
     if response.get("content"):
         print(response["content"])
         tts.speak(response["content"])
-
-    # Hotword detection
-    recorder.start()
-    while True:
-        pcm = recorder.read()
-        result = porcupine.process(pcm)
-        if result >= 0:
-            print("Hotword detected")
-            break
-    recorder.stop()
-    tts.speak(choice(hotword_responses))
-    recorder.start()
+    else:
+        # Hotword detection
+        recorder.start()
+        while True:
+            pcm = recorder.read()
+            result = porcupine.process(pcm)
+            if result >= 0:
+                print("Hotword detected")
+                break
+        recorder.stop()
+        tts.speak(choice(hotword_responses))
     # Listen audio prompt
+    recorder.start()
     audio = []
+    frames_count = 0
     silent_frames_count = 0
+    temp_silent_frames_count = 0
     while True:
+        frames_count += 1
         frame = recorder.read()
         audio.extend(frame)
         max_frame_vol = np.max(np.abs(frame))
         print(max_frame_vol)
         if max_frame_vol < 300:
             silent_frames_count += 1
-            if silent_frames_count > 30:
+            temp_silent_frames_count += 1
+            if temp_silent_frames_count > 30:
                 break
         else:
-            silent_frames_count = 0
-    # Save audio 
+            temp_silent_frames_count = 0
+
     recorder.stop()
+    frames_ratio = silent_frames_count / frames_count
+    if frames_ratio > 0.9: # Nothing was said
+        response = {}
+        continue
+    # Save audio 
     with wave.open(prompt_audio_path, "w") as f:
         f.setparams((1, 2, 16000, 512, "NONE", "NONE"))
         f.writeframes(struct.pack("h" * len(audio), *audio))
     # Decode using whisper
     result = stt.transcribe(prompt_audio_path)
 
-    message = result["text"]
+    message: str = result["text"] # type: ignore
     print("Transcribed audio = ", message)
     response = llm.prompt(message)
             
