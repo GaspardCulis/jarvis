@@ -31,13 +31,13 @@ class TerminalModule(LLMModule):
                 "assistant", 
                 "content": None,
                 "function_call": {
-                    "name": "terminal",
+                    "name": self.name,
                     "arguments": "{\n  \"command\": \"cat /etc/os-release\"\n}"
                 }
             },
             {
                 'role': 'function', 
-                'name': 'terminal', 
+                'name': self.name, 
                 'content': self.activate({
                     "command": "cat /etc/os-release"
                 })

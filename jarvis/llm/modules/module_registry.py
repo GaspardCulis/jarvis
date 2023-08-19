@@ -16,6 +16,7 @@ class ModuleRegistry():
         return ModuleRegistry._instance
 
     def register(self, module: 'LLMModule') -> None:
+        print(f"[ModuleRegistry] Registered module '{module.name}'")
         self.modules[module.name] = module
 
     def get_preprompts(self) -> list[dict]:

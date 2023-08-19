@@ -8,3 +8,4 @@ elevenlabs==0.2.18
 pvporcupine==2.2.1
 pvrecorder==1.2.0
 numpy<=1.24
+ytmusicapi==1.1.1

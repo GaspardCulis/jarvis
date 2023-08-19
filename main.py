@@ -1,8 +1,10 @@
+import json
 from dotenv import load_dotenv  # noqa
 load_dotenv()  # noqa
 
 from jarvis.llm.modules.module_registry import ModuleRegistry
 from jarvis.llm.modules.terminal import TerminalModule
+from jarvis.llm.modules.music import MusicSearch, MusicPlay
 from jarvis.llm.gpt_turbo import LLM
 from jarvis.tts.elevenlabs import ElevenLabs
 
@@ -16,6 +18,8 @@ import os
 from random import choice
 
 term = TerminalModule()
+music_search = MusicSearch()
+music_play = MusicPlay()
 
 llm = LLM()
 tts = ElevenLabs()
@@ -34,17 +38,22 @@ recorder = PvRecorder(
 prompt_audio_path = "/tmp/jarvis_prompt.wav"
 
 llm.message_history += ModuleRegistry.get_instance().get_preprompts()
+#print(json.dumps(llm.message_history, indent=2))
+#exit(0)
 
 response = {}
 while True:
     if response.get("function_call"):
         output = ModuleRegistry.get_instance().gpt_function_call(response["function_call"])
         print("Module output: ", output)
-        response = llm.prompt({
-            "role": "function",
-            "name": response["function_call"]["name"],
-            "content": output
-        })
+        if output:
+            response = llm.prompt({
+                "role": "function",
+                "name": response["function_call"]["name"],
+                "content": output
+            })
+        else:
+            response = {}
         continue
     
     if response.get("content"):
