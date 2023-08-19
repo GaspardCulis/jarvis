@@ -11,7 +11,7 @@ class LLMModule(ABC):
         ModuleRegistry.get_instance().register(self)
 
     @abstractmethod
-    def activate(self, message: str) -> str:
+    def activate(self, arguments: dict) -> str:
         pass
 
     @abstractmethod
