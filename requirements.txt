@@ -7,4 +7,4 @@ prompt_toolkit==3.0.38
 elevenlabs==0.2.18
 pvporcupine==2.2.1
 pvrecorder==1.2.0
-numpy==1.25.1
+numpy<=1.24
