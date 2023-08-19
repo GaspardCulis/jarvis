@@ -22,7 +22,8 @@ tts = ElevenLabs()
 stt = whisper.load_model("medium")
 porcupine = pvporcupine.create(
     access_key = os.getenv("PORCUPINE_API_KEY"),
-    keyword_paths = [os.getenv("PORCUPINE_MODEL_PATH")]
+    model_path = os.getenv("PORCUPINE_MODEL_PATH"),
+    keyword_paths = [os.getenv("PORCUPINE_PPN_PATH")]
 )
 hotword_responses = ["Oui ?", "Qu'y a-t-il ?", "Que puis-je faire pour vous ?", "Comment puis-je vous aider ?"]
 
@@ -59,8 +60,7 @@ while True:
             print("Hotword detected")
             break
     recorder.stop()
-    while True:
-        tts.speak(choice(hotword_responses))
+    tts.speak(choice(hotword_responses))
     recorder.start()
     # Listen audio prompt
     audio = []
