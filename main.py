@@ -7,6 +7,7 @@ from jarvis.llm.modules.terminal import TerminalModule
 from jarvis.llm.modules.music import MusicSearch, MusicPlay
 from jarvis.llm.gpt_turbo import LLM
 from jarvis.tts.elevenlabs import ElevenLabs
+from jarvis.tts.coquiai import CoquiAI
 
 import pvporcupine
 from pvrecorder import PvRecorder
@@ -22,7 +23,8 @@ music_search = MusicSearch()
 music_play = MusicPlay()
 
 llm = LLM()
-tts = ElevenLabs()
+tts = CoquiAI("0f82817b-eea7-4f28-8a02-5900a1b23e30") #ElevenLabs()
+
 stt = whisper.load_model("medium")
 porcupine = pvporcupine.create(
     access_key = os.getenv("PORCUPINE_API_KEY"),
@@ -61,6 +63,7 @@ while True:
         tts.speak(response["content"])
     else:
         # Hotword detection
+        print("Waiting for hotword")
         recorder.start()
         while True:
             pcm = recorder.read()
