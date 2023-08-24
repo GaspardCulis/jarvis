@@ -9,13 +9,15 @@ class WhisperConfig:
     def __init__(
             self, 
             prompt_audio_path = "/tmp/jarvis_prompt.wav", 
-            device_index = -1,
+            audio_device_index = -1,
+            device: str | None = None,
             max_silent_frames = 30,
             min_volume = 300,
             max_silent_frames_ratio = 0.9
         ) -> None:
         self.prompt_audio_path = prompt_audio_path
-        self.device_index = device_index
+        self.audio_device_index = audio_device_index
+        self.device = device
         self.max_silent_frames = max_silent_frames
         self.min_volume = min_volume
         self.max_silent_frames_ratio = max_silent_frames_ratio
@@ -24,10 +26,10 @@ class WhisperConfig:
 class Whisper(STTProvider):
     def __init__(self, config = WhisperConfig()) -> None:
         super().__init__()
-        self.model = whisper.load_model("medium")
         self.C = config
+        self.model = whisper.load_model("medium", device=self.C.device)
         self.recorder = PvRecorder(
-            device_index=self.C.device_index,
+            device_index=self.C.audio_device_index,
             frame_length=512
         )
 
