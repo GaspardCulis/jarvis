@@ -58,3 +58,7 @@ After you install it, you can run the previous command to make Chuck Norris tell
 ```
 
 </details>
+
+## Todo
+
+- Multi-lingual support
