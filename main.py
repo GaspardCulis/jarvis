@@ -61,7 +61,10 @@ while True:
     
     if response.get("content"):
         print(response["content"])
-        tts.speak(response["content"])
+        try:
+            tts.speak(response["content"])
+        except KeyboardInterrupt:
+            print("Skipping tts")
     else:
         # Hotword detection
         print("Waiting for hotword")
