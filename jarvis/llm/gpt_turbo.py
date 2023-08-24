@@ -34,21 +34,7 @@ class LLM():
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo-16k-0613",
             messages=self.message_history,
-            functions=[
-                {
-                    "name": "terminal",
-                    "description": "Executes a bash command in a persitent shell session",
-                    "parameters": {
-                        "type": "object",
-                        "properties": {
-                            "command": {
-                                "type": "string",
-                                "description": "The command to execute",
-                            },
-                        }
-                    }
-                }
-            ],
+            functions=functions,
             function_call="auto",
         )
 

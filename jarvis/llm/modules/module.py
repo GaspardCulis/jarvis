@@ -1,10 +1,13 @@
 from abc import ABC, abstractmethod
-from typing import Tuple, Dict
+from typing import TypedDict, Dict
 from jarvis.llm.modules.module_registry import ModuleRegistry
 
+class FunctionParameter(TypedDict):
+    type: str
+    description: str
 
 class LLMModule(ABC):
-    def __init__(self, name: str, description: str, parameters: Dict[str, Tuple[str, str]]) -> None:
+    def __init__(self, name: str, description: str, parameters: Dict[str, FunctionParameter]) -> None:
         self.name = name
         self.description = description
         self.parameters = parameters

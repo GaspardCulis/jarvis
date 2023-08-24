@@ -23,7 +23,10 @@ music_search = MusicSearch()
 music_play = MusicPlay()
 
 llm = LLM()
-tts = CoquiAI("0f82817b-eea7-4f28-8a02-5900a1b23e30") #ElevenLabs()
+llm.message_history += ModuleRegistry.get_instance().get_preprompts()
+# print(json.dumps(llm.message_history, indent=2))
+
+tts = ElevenLabs()
 
 stt = whisper.load_model("medium")
 porcupine = pvporcupine.create(
@@ -39,8 +42,6 @@ recorder = PvRecorder(
 
 prompt_audio_path = "/tmp/jarvis_prompt.wav"
 
-llm.message_history += ModuleRegistry.get_instance().get_preprompts()
-#print(json.dumps(llm.message_history, indent=2))
 #exit(0)
 
 response = {}

@@ -9,7 +9,9 @@ class MusicSearch(LLMModule):
 
     def __init__(self) -> None:
         super().__init__("music-search", "Search musics based on a text query, provides the YouTube videoId for each result", {
-            "query":("string", "The search query")
+            "query":{
+                "type":"string", 
+                "description": "The search query"}
         })
         self.ytmusic = YTMusic(auth=os.getenv("YTMUSICAPI_OAUTH_PATH") or None)  # type: ignore
 
@@ -84,7 +86,10 @@ class MusicSearch(LLMModule):
 class MusicPlay(LLMModule):
     def __init__(self) -> None:
         super().__init__("music-play", "Plays music given a YouTube videoId", {
-            "video-id": ("string", "The YouTube videoId of the song to play")
+            "video-id": {
+                "type":"string", 
+                "description":"The YouTube videoId of the song to play"
+            }
         })
 
     def activate(self, arguments: dict) -> str:

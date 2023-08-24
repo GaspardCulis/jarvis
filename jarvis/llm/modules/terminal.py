@@ -13,7 +13,7 @@ def get_pid_childs_count(pid: int):
 
 class TerminalModule(LLMModule):
     def __init__(self) -> None:
-        super().__init__("terminal", "Executes a bash command in a persitent shell session.", {"command":("string", "The command to execute")}) 
+        super().__init__("terminal", "Executes a bash command in a persitent shell session.", {"command":{"type": "string", "description": "The command to execute"}}) 
         self.terminal = subprocess.Popen(
             ['/bin/bash'], shell=False, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         os.set_blocking(self.terminal.stdout.fileno(), False)
