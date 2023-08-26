@@ -13,9 +13,9 @@ class ModuleRegistry():
     def get_instance() -> 'ModuleRegistry':
         if ModuleRegistry._instance is None:
             ModuleRegistry()
-        return ModuleRegistry._instance
+        return ModuleRegistry._instance # type: ignore
 
-    def register(self, module: 'LLMModule') -> None:
+    def register(self, module: 'LLMModule') -> None: # TODO: Refactor
         print(f"[ModuleRegistry] Registered module '{module.name}'")
         self.modules[module.name] = module
 

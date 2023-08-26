@@ -1,4 +1,3 @@
-import json
 from dotenv import load_dotenv  # noqa
 load_dotenv()  # noqa
 

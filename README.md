@@ -62,3 +62,6 @@ After you install it, you can run the previous command to make Chuck Norris tell
 ## Todo
 
 - Multi-lingual support
+- More modules
+- Better showcase
+- Windows support (I use arch btw)
