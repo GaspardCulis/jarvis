@@ -65,3 +65,4 @@ After you install it, you can run the previous command to make Chuck Norris tell
 - More modules
 - Better showcase
 - Windows support (I use arch btw)
+- Stronger types for LLM message hist

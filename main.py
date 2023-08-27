@@ -1,9 +1,11 @@
 from dotenv import load_dotenv  # noqa
 load_dotenv()  # noqa
 
+import os
 from jarvis.llm.modules.module_registry import ModuleRegistry
 from jarvis.llm.modules.terminal import TerminalModule
 from jarvis.llm.modules.music import MusicSearch, MusicPlay
+from jarvis.llm.contexts import JARVIS_CONTEXTS
 from jarvis.llm.gpt_turbo import LLM
 from jarvis.tts.elevenlabs import ElevenLabs
 from jarvis.stt.whisper import Whisper
@@ -13,7 +15,7 @@ term = TerminalModule()
 music_search = MusicSearch()
 music_play = MusicPlay()
 
-llm = LLM()
+llm = LLM(JARVIS_CONTEXTS[os.getenv("ASSISTANT_LANG") or "en"])
 llm.message_history += ModuleRegistry.get_instance().get_preprompts()
 # print(json.dumps(llm.message_history, indent=2))
 

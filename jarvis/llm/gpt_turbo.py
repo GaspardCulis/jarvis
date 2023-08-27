@@ -1,14 +1,14 @@
 import openai
 import os
-from jarvis.llm.contexts import JARVIS_CONTEXT
+from copy import deepcopy
 from jarvis.llm.modules.module_registry import ModuleRegistry
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 
 class LLM():
-    def __init__(self) -> None:
-        self.message_history = JARVIS_CONTEXT
+    def __init__(self, context: list[dict]) -> None:
+        self.message_history = deepcopy(context)
         self.token_usage = 0
 
     def prompt(self, message: str | dict):
