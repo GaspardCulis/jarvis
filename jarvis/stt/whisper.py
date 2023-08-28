@@ -1,14 +1,16 @@
 from jarvis.stt.stt_provider import STTProvider
+import os
 import wave
 import struct
 import whisper
+import tempfile
 import numpy as np
 from pvrecorder import PvRecorder
 
 class WhisperConfig:
     def __init__(
             self, 
-            prompt_audio_path = "/tmp/jarvis_prompt.wav", 
+            prompt_audio_path = os.path.join(tempfile.gettempdir(), "jarvis_prompt.wav"), 
             audio_device_index = -1,
             device: str | None = None,
             max_silent_frames = 30,
