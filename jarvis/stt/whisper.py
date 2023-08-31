@@ -29,7 +29,9 @@ class Whisper(STTProvider):
     def __init__(self, config = WhisperConfig()) -> None:
         super().__init__()
         self.C = config
+        print("[Whisper] Loading model...")
         self.model = whisper.load_model("medium", device=self.C.device)
+        print("[Whisper] Model loaded")
         self.recorder = PvRecorder(
             device_index=self.C.audio_device_index,
             frame_length=512

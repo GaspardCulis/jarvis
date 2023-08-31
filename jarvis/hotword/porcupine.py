@@ -29,6 +29,7 @@ class Porcupine(HotwordProvider):
         )
 
     def wait(self) -> None:
+        print("[Porcupine] Waiting for hotword...")
         self.recorder.start()
         while True:
             pcm = self.recorder.read()
