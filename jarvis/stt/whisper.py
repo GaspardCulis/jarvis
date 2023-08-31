@@ -39,6 +39,7 @@ class Whisper(STTProvider):
 
 
     def listen(self) -> str | None:
+        print("[Whisper] Listening...")
         self.recorder.start()
         audio = []
         frames_count = 0
@@ -66,4 +67,4 @@ class Whisper(STTProvider):
             f.setparams((1, 2, 16000, 512, "NONE", "NONE"))
             f.writeframes(struct.pack("h" * len(audio), *audio))
         # Decode using whisper
-        return self.model.transcribe(self.prompt_audio_path)["text"] # type: ignore
+        return self.model.transcribe(self.C.prompt_audio_path)["text"] # type: ignore
