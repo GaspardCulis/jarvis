@@ -5,6 +5,7 @@ import os
 from jarvis.llm.modules.module_registry import ModuleRegistry
 from jarvis.llm.modules.terminal import TerminalModule
 from jarvis.llm.modules.music import MusicSearch, MusicPlay
+from jarvis.llm.modules.private.declaration import *
 from jarvis.llm.contexts import JARVIS_CONTEXTS
 from jarvis.llm.gpt_turbo import LLM
 from jarvis.tts.elevenlabs import ElevenLabs
@@ -28,18 +29,22 @@ hotword = Porcupine(tts=tts)
 response = {}
 while True:
     if response.get("function_call"):
-        output = ModuleRegistry.get_instance().gpt_function_call(response["function_call"])
+        output = ModuleRegistry.get_instance().gpt_function_call(
+            response["function_call"]
+        )
         print("Module output: ", output)
         if output:
-            response = llm.prompt({
-                "role": "function",
-                "name": response["function_call"]["name"],
-                "content": output
-            })
+            response = llm.prompt(
+                {
+                    "role": "function",
+                    "name": response["function_call"]["name"],
+                    "content": output,
+                }
+            )
         else:
             response = {}
         continue
-    
+
     if response.get("content"):
         print(response["content"])
         try:
@@ -59,4 +64,3 @@ while True:
 
     print("Transcribed audio = ", message)
     response = llm.prompt(message)
-            
